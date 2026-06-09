@@ -1,27 +1,38 @@
 <?php
 
 use Livewire\Component;
-use app\livewire\Forms\CategoryForm;
+use App\Livewire\Forms\CategoryForm;
+use Flux\Flux;
 
 new class extends Component
 {
-    //instance class categorycorm
+    //instance class categoryform
     public CategoryForm $form;
 
     public function save()
-     
     {
-       $this->form->store();
+        $this->form->store();
+        Flux::modal('create-category')->close();
+
+        //session
+        session()->flash('success', 'Category created succesfully');
+        
+        $this->redirectRoute('category.index',navigate: true);
+
     }
-    
-   
+
+    public function resetForm()
+    {
+        $this->resetValidation();
+        $this->form->reset();
+    }
 };
 ?>
 
 <div>
-    <flux:modal name="create-category" class="md:w-150">
-     <form class="space-y-8" wire:submit.prevent="save">
-            {{-- header --}}
+    <flux:modal name="create-category" class="md:w-150" x-on:close="$wire.resetForm()"> 
+        <form class="space-y-8" wire:submit.prevent="save">
+            {{-- header --}} 
             <div class="space-y-2">
                 <flux:heading size="lg" class="text-zinc-900 dark:text-white">
                     Create Category
@@ -34,18 +45,18 @@ new class extends Component
             {{-- form field --}}
             <div class="space-y-6">
                 <flux:input
-                    label="Name"
-                    placeholder="Enter category name"
-                    wire:model="form.name"
-                />
+                label="Name"
+                placeholder="Enter category name"
+                wire:model="form.name"
+            />
+            
+            <flux:textarea
+                label="Description"
+                placeholder="Enter category description"
+                wire:model="form.description"
+            />
+        </div>
 
-                <flux:textarea
-                    label="Description"
-                    placeholder="Enter category description"
-                    wire:model="form.description"
-                />
-            </div>
-    
             {{-- footer --}}
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
                 <flux:modal.close>
@@ -53,7 +64,6 @@ new class extends Component
                 </flux:modal.close>
                 <flux:button variant="primary" color="primary" type="submit">Create</flux:button>
             </div>
-                
 
         </form>
     </flux:modal>
